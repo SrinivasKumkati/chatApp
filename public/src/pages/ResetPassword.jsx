@@ -1,16 +1,27 @@
-                                //REVISE THE SAME STUFF FROM REGISTER PAGE
+//below all the libraries are used before itself....
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styled from "styled-components";
-import { useNavigate, Link } from "react-router-dom";
+//below all the libraries are used before...
+import { useNavigate} from "react-router-dom";
 import Logo from "../assets/logo.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { loginRoute } from "../utils/APIRoutes";
+import { resetpasswordRoute } from "../utils/APIRoutes";
 
-export default function Login() {
+
+export default function ResetPassword(props) {
   const navigate = useNavigate();
-  const [values, setValues] = useState({ username: "", password: "" });
+  //entered input data by user in this page..
+  const [values, setValues] = useState({
+    username: "",
+    email: "",
+    otp:"",
+    password: "",
+    confirmPassword: "",
+  });
+
+  //toasterror styling..
   const toastOptions = {
     position: "bottom-right",
     autoClose: 8000,
@@ -18,83 +29,118 @@ export default function Login() {
     draggable: true,
     theme: "dark",
   };
-  
+
+  //if already user is in localstrfe..redirect to chat page..
   useEffect(() => {
-    console.log(localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY));
-    //console.log('hello');
     if (localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
       navigate("/");
     }
   }, []);
 
-  //updating the values of the input...
+  //live input changer...
   const handleChange = (event) => {
     setValues({ ...values, [event.target.name]: event.target.value });
   };
 
+//validating the input formm...
   const validateForm = () => {
-    const { username, password } = values;
+
+    const { username, email,otp,password,confirmPassword } = values;
     if (username === "") {
-      toast.error("Email and Password is required.", toastOptions);
+      toast.error("Username is required.", toastOptions);
       return false;
-    } else if (password === "") {
-      toast.error("Email and Password is required.", toastOptions);
-      return false;
+    } else if (email === "") {
+      toast.error("Email is required.", toastOptions);
+      return false; 
+    }else if(otp === ""){
+      toast.error("Otp is required", toastOptions);
+      return false; 
+    }else if(password === "" || confirmPassword === "")
+    {  
+      toast.error("Password and ConfirmPassword is required. ", toastOptions);
+      return false; 
+    }else if(password!==confirmPassword){
+        toast.error("Password is not matching with confirmPassword ", toastOptions);
+        return false;
     }
     return true;
-  };
+  }
 
-  const handleSubmit = async (event) => {
+//this func executes when we press submti button..
+const handleSubmit = async (event) => {
     event.preventDefault();
     if (validateForm()) {
-      const { username, password } = values;
-      const { data } = await axios.post(loginRoute, {
-        username,
-        password,
-      });
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
-      }
-      if (data.status === true) {
-        localStorage.setItem(
-          process.env.REACT_APP_LOCALHOST_KEY,
-          JSON.stringify(data.user)
-        );
+        const { username,password,otp } = values;
 
-        navigate("/");
-      }
-    }
-  };
+        //storing the info in the backend....
+        const { data } = await axios.post(resetpasswordRoute, {
+          username,
+          otp,
+          password,
+        });
 
+        if (data.status === false) {
+          toast.error(data.msg, toastOptions);
+        }
+        if (data.status === true) {
+        //   localStorage.setItem(
+        //     process.env.REACT_APP_LOCALHOST_KEY,
+        //     JSON.stringify(data.user)
+        //   );
+        //go to login page!
+          navigate("/login");
+        }
+      }
+};
+
+//normal form..
   return (
     <>
+      {/* console.log({location.state.name}); */}
       <FormContainer>
         <form action="" onSubmit={(event) => handleSubmit(event)}>
+
           <div className="brand">
             <img src={Logo} alt="logo" />
             <h1>ChatVerse</h1>
           </div>
+
           <input
             type="text"
             placeholder="Username"
             name="username"
             onChange={(e) => handleChange(e)}
-            min="3"
           />
-          <input
+
+           <input
+            type="email"
+            placeholder="Email"
+            name="email"
+            onChange={(e) => handleChange(e)}
+          />
+
+        <input
+            type="text"
+            placeholder="OTP"
+            name="otp"
+            onChange={(e) => handleChange(e)}
+          />
+
+         <input
             type="password"
             placeholder="Password"
             name="password"
             onChange={(e) => handleChange(e)}
           />
-          <button type="submit">Log In</button>
-          <span>
-            Don't have an account ? <Link to="/register">Create One.</Link>
-          </span>
-          {/* till here same */}
-          <span>
-            Can't remeber password <Link to="/forgotpassword">Forgot Password</Link>
-          </span>
+
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            name="confirmPassword"
+            onChange={(e) => handleChange(e)}
+          />
+
+          <button type="submit">Submit</button>
         </form>
       </FormContainer>
       <ToastContainer />
@@ -102,6 +148,7 @@ export default function Login() {
   );
 }
 
+//styled component for the pge...
 const FormContainer = styled.div`
   height: 100vh;
   width: 100vw;

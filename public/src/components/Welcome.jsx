@@ -1,26 +1,36 @@
+//already discussed regarding these libraries before...
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Robot from "../assets/robot.gif";
+
 export default function Welcome() {
+  //extracting the username from the useState...
   const [userName, setUserName] = useState("");
+
   useEffect(async () => {
     setUserName(
+      //extracting the username of the current user from local storage...
       await JSON.parse(
         localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
       ).username
     );
   }, []);
+
   return (
+
     <Container>
       <img src={Robot} alt="" />
       <h1>
+        {/* //adding elements or things required to show in welcome page... */}
         Welcome, <span>{userName}!</span>
       </h1>
-      <h3>Please select a chat to Start messaging.</h3>
+      {/* here too select a chat box to start convo... */}
+      <h3>Select a chat box to start convo.</h3>
     </Container>
   );
 }
 
+//styling the welcome page...
 const Container = styled.div`
   display: flex;
   justify-content: center;

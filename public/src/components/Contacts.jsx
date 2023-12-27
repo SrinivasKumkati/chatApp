@@ -1,31 +1,44 @@
+//below 3 libraries are same in other pages...
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Logo from "../assets/logo.svg";
 
 export default function Contacts({ contacts, changeChat }) {
+  //here storing info about current user only..because while extracting contatcs 
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentUserImage, setCurrentUserImage] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
+  
+  //extracting info about the currrent user from the local storage...
   useEffect(async () => {
     const data = await JSON.parse(
       localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
     );
+    
+    //after extracting current user...setting the username and image!
     setCurrentUserName(data.username);
     setCurrentUserImage(data.avatarImage);
   }, []);
+
+  //when ever we select any contact...this is handler..
   const changeCurrentChat = (index, contact) => {
+    //setting the currentSelected value...
     setCurrentSelected(index);
+    //
     changeChat(contact);
   };
+
   return (
     <>
       {currentUserImage && currentUserImage && (
         <Container>
+          {/* here we are displaying the contacts on the page as a component... */}
           <div className="brand">
             <img src={Logo} alt="logo" />
-            <h3>snappy</h3>
+            <h3>ChatVerse</h3>
           </div>
           <div className="contacts">
+            {/* showing the user chatcontainer based on clicking event... */}
             {contacts.map((contact, index) => {
               return (
                 <div
@@ -64,6 +77,8 @@ export default function Contacts({ contacts, changeChat }) {
     </>
   );
 }
+
+//styling the component here....!
 const Container = styled.div`
   display: grid;
   grid-template-rows: 10% 75% 15%;

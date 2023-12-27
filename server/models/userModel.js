@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+//This is a JavaScript code snippet that defines a Mongoose schema for a user in a MongoDB database
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -19,6 +20,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     min: 8,
   },
+  //dont write 
   isAvatarImageSet: {
     type: Boolean,
     default: false,

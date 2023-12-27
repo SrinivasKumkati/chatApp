@@ -1,5 +1,7 @@
+//in frontend it starts from here...
 import React from "react";
 import ReactDOM from "react-dom";
+//importing app.js///
 import App from "./App";
 import "./index.css";
 ReactDOM.render(

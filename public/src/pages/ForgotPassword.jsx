@@ -1,16 +1,26 @@
-                                //REVISE THE SAME STUFF FROM REGISTER PAGE
+//below function are already used before...
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+// right now not having any API then we get error...
+// import axios from "axios";
 import styled from "styled-components";
 import { useNavigate, Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { loginRoute } from "../utils/APIRoutes";
+import { forgotpasswordRoute } from "../utils/APIRoutes";
 
-export default function Login() {
+
+//import { forgotpasswordRoute } from "../utils/APIRoutes";
+//with help of this library..we can mail to the user
+import emailjs from "emailjs-com";
+
+export default function ForgotPassword() {
   const navigate = useNavigate();
-  const [values, setValues] = useState({ username: "", password: "" });
+  //values entered by user..
+  const [values, setValues] = useState({ username: "", email: "" });
+
+  //toast error styling..
   const toastOptions = {
     position: "bottom-right",
     autoClose: 8000,
@@ -19,53 +29,67 @@ export default function Login() {
     theme: "dark",
   };
   
+  //if the user present in localstrge..then it redirects to chat page...
   useEffect(() => {
-    console.log(localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY));
-    //console.log('hello');
     if (localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
       navigate("/");
     }
   }, []);
 
-  //updating the values of the input...
+  //live handler change..
   const handleChange = (event) => {
     setValues({ ...values, [event.target.name]: event.target.value });
   };
 
+  
   const validateForm = () => {
-    const { username, password } = values;
+    const { username, email } = values;
     if (username === "") {
-      toast.error("Email and Password is required.", toastOptions);
+      toast.error("Username is required.", toastOptions);
       return false;
-    } else if (password === "") {
-      toast.error("Email and Password is required.", toastOptions);
+    } else if (email === "") {
+      toast.error("Email is required.", toastOptions);
       return false;
     }
     return true;
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (validateForm()) {
-      const { username, password } = values;
-      const { data } = await axios.post(loginRoute, {
-        username,
-        password,
+  const handleSubmit = async (event) => 
+{
+    event.preventDefault(); // Prevents default refresh by the browser
+    if(validateForm())
+    {
+      const {username,email} = values;
+      const { data } = await axios.post(forgotpasswordRoute, {
+          username,
+          email,
       });
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
-      }
-      if (data.status === true) {
-        localStorage.setItem(
-          process.env.REACT_APP_LOCALHOST_KEY,
-          JSON.stringify(data.user)
-        );
-
-        navigate("/");
+      if(data.status == false)
+      {
+        toast.error(data.msg,toastOptions);
+      }else
+      {
+      //mail template..receiver's email along with name and OTP.
+        var template_params = {
+            to_name: username,
+            email: email,
+            otp_no: "1234"
+        };
+        //used emailJS!for sending email to the user!
+        emailjs.send('service_zvw5rd7','template_j4xbje7',template_params,'FcHafgLCuOe93QLvK')
+        .then((result) => {
+        alert("Message Sent, We will get back to you shortly", result.text);
+        //after email succefuslly done redirect it to resetpassword form page...
+        navigate('/resetpassword')
+        },
+        (error) => {
+        alert("An error occurred, Please try again", error.text);
+        });
       }
     }
-  };
+};
 
+//form with username...email..details
   return (
     <>
       <FormContainer>
@@ -81,20 +105,13 @@ export default function Login() {
             onChange={(e) => handleChange(e)}
             min="3"
           />
-          <input
-            type="password"
-            placeholder="Password"
-            name="password"
+           <input
+            type="email"
+            placeholder="Email"
+            name="email"
             onChange={(e) => handleChange(e)}
           />
-          <button type="submit">Log In</button>
-          <span>
-            Don't have an account ? <Link to="/register">Create One.</Link>
-          </span>
-          {/* till here same */}
-          <span>
-            Can't remeber password <Link to="/forgotpassword">Forgot Password</Link>
-          </span>
+          <button type="submit">Submit</button>
         </form>
       </FormContainer>
       <ToastContainer />
@@ -102,6 +119,7 @@ export default function Login() {
   );
 }
 
+//styling of the page...
 const FormContainer = styled.div`
   height: 100vh;
   width: 100vw;

@@ -1,24 +1,41 @@
+//already infrmed
 import React, { useState } from "react";
+
+//emoji library...
 import { BsEmojiSmileFill } from "react-icons/bs";
+//library for the send button...
 import { IoMdSend } from "react-icons/io";
+//styled component in the react-js...
 import styled from "styled-components";
+
+//library for the emoji-picker...
 import Picker from "emoji-picker-react";
 
 export default function ChatInput({ handleSendMsg }) {
+  //typed msg...
   const [msg, setMsg] = useState("");
+
+  //intially keeping it off...so when we click we get slideshow of emojis
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  //handling slide show of emoji picker..., each time when we click it gets alternate result..if it is open(then it closes.)..if already
+  //closed..then it will open
   const handleEmojiPickerhideShow = () => {
     setShowEmojiPicker(!showEmojiPicker);
   };
 
+  //when we click on emoji..to our msg that emoji gets add here...
   const handleEmojiClick = (event, emojiObject) => {
     let message = msg;
     message += emojiObject.emoji;
+    //after adding again updating the msg variable..
     setMsg(message);
   };
 
+  //on submit function...
   const sendChat = (event) => {
     event.preventDefault();
+    // it sends the msg if len>0, after sending it makes the input msg area to Empty..
     if (msg.length > 0) {
       handleSendMsg(msg);
       setMsg("");
@@ -27,27 +44,37 @@ export default function ChatInput({ handleSendMsg }) {
 
   return (
     <Container>
+
       <div className="button-container">
         <div className="emoji">
+          {/* //showing smile symbol on emoji icon, executes the func after clicking it*/}
           <BsEmojiSmileFill onClick={handleEmojiPickerhideShow} />
           {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
         </div>
       </div>
+
+       {/* contains the input-msg on the container... */}
       <form className="input-container" onSubmit={(event) => sendChat(event)}>
         <input
+        //here we are having input type text...
+        //adding the placeholder and setting the msg on runtime..
           type="text"
           placeholder="type your message here"
           onChange={(e) => setMsg(e.target.value)}
           value={msg}
         />
+
+        {/*send button */}
         <button type="submit">
           <IoMdSend />
         </button>
+
       </form>
     </Container>
   );
 }
 
+//styling of the component...
 const Container = styled.div`
   display: grid;
   align-items: center;
